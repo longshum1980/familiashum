@@ -862,16 +862,61 @@
   nav { position: sticky; top: 0; z-index: 100; }
 
   @media (max-width: 768px) {
-    .hamburger { display: block; }
-    nav { position: sticky; top: 0; z-index: 100; }
+    .hamburger {
+      display: block;
+      position: relative;
+      margin-left: auto;
+      right: auto;
+      top: auto;
+      transform: none;
+      font-size: 1.8rem;
+      padding: 0.8rem 1.2rem;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      overflow: visible;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    nav::before {
+      content: '岑 Cén';
+      font-family: 'Noto Serif SC', serif;
+      color: var(--gold);
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 0.8rem 1.2rem;
+      letter-spacing: 0.05em;
+    }
     nav ul {
       display: none;
       flex-direction: column;
       width: 100%;
       padding: 0;
+      min-width: unset;
+      order: 3;
+      background: rgba(26,26,46,0.98);
+      border-top: 1px solid rgba(201,168,76,0.3);
     }
-    nav ul.open { display: flex; }
-    nav a { text-align: center; border-bottom: 1px solid rgba(201,168,76,0.2); }
+    nav ul.open {
+      display: flex;
+      animation: slideDown 0.3s ease;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    nav a {
+      text-align: center;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      padding: 1rem 1.3rem;
+      font-size: 0.95rem;
+    }
+    nav a:hover, nav a:active {
+      background: rgba(201,168,76,0.2);
+    }
   }
 
   /* ─── BACK TO TOP ─── */
@@ -1072,16 +1117,380 @@
     color: #aaa;
   }
 
+  /* ─── COMMENT SYSTEM ─── */
+  .comment-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 2rem auto 0;
+    padding: 0.6rem 1.4rem;
+    background: white;
+    border: 2px dashed var(--gold);
+    border-radius: 30px;
+    cursor: pointer;
+    color: var(--gold);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    width: fit-content;
+  }
+  .comment-trigger:hover {
+    background: var(--gold);
+    color: white;
+    border-style: solid;
+  }
+  .comment-trigger .plus {
+    font-size: 1.3rem;
+    line-height: 1;
+  }
+
+  .comments-area {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+  }
+
+  .comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .comment-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    border-left: 4px solid var(--gold);
+    animation: fadeInComment 0.4s ease;
+  }
+
+  @keyframes fadeInComment {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .comment-card .comment-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .comment-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--gold), var(--red-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .comment-meta {
+    flex: 1;
+  }
+
+  .comment-meta .name {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 0.95rem;
+  }
+
+  .comment-meta .relation {
+    font-size: 0.78rem;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .comment-meta .date {
+    font-size: 0.75rem;
+    color: var(--gray);
+  }
+
+  .comment-card .comment-text {
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.6;
+  }
+
+  .comment-count {
+    font-size: 0.82rem;
+    color: var(--gray);
+    margin-bottom: 0.8rem;
+    font-style: italic;
+  }
+
+  /* Comment Modal */
+  .comment-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9998;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+  .comment-modal-overlay.active { display: flex; }
+
+  .comment-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+  }
+
+  .comment-modal h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--red-dark);
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .comment-modal .modal-section-name {
+    font-size: 0.85rem;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .comment-modal .close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--gray);
+    transition: color 0.3s;
+    line-height: 1;
+  }
+  .comment-modal .close-modal:hover { color: var(--red); }
+
+  .comment-form label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+    margin-top: 1rem;
+  }
+
+  .comment-form input,
+  .comment-form select,
+  .comment-form textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.95rem;
+    transition: border-color 0.3s;
+    background: white;
+  }
+
+  .comment-form input:focus,
+  .comment-form select:focus,
+  .comment-form textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .comment-form textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .comment-form .submit-btn {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, var(--gold), #d4b85c);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .comment-form .submit-btn:hover {
+    background: linear-gradient(135deg, var(--red-dark), var(--red));
+    transform: translateY(-1px);
+  }
+  .comment-form .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .comment-form .submit-status {
+    text-align: center;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    min-height: 1.2em;
+  }
+  .submit-status.success { color: var(--jade); }
+  .submit-status.error { color: var(--red); }
+
+  /* Dark section comment overrides */
+  .diaspora-section .comment-trigger {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--gold);
+    color: var(--gold-light);
+  }
+  .diaspora-section .comment-trigger:hover {
+    background: var(--gold);
+    color: var(--ink);
+  }
+  .diaspora-section .comment-card {
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--gold);
+  }
+  .diaspora-section .comment-card .comment-text { color: rgba(255,255,255,0.85); }
+  .diaspora-section .comment-card .name { color: white; }
+  .diaspora-section .comment-card .date { color: rgba(255,255,255,0.5); }
+  .diaspora-section .comment-count { color: rgba(255,255,255,0.5); }
+
+  /* ─── MOBILE RESPONSIVE FIXES ─── */
+  @media (max-width: 480px) {
+    /* Fix 1: Portrait photos too tall on small phones */
+    .photo-item.portrait img { height: 300px; }
+    .photo-item img { height: 200px; }
+    .photo-item.tall img { height: 260px; }
+
+    /* Fix 2: Lightbox arrows overlap image on small screens */
+    .lightbox-nav { font-size: 1.8rem; padding: 0.4rem 0.7rem; }
+    .lightbox-prev { left: 0.3rem; }
+    .lightbox-next { right: 0.3rem; }
+    .lightbox-close { top: 0.8rem; right: 0.8rem; width: 38px; height: 38px; font-size: 1.5rem; }
+
+    /* Fix 3: Gallery-2 too wide for small phones */
+    .photo-gallery.gallery-2 { grid-template-columns: 1fr; }
+
+    /* Couplet text scaling */
+    .couplet-box .line { font-size: 1rem; letter-spacing: 0.1em; }
+    .couplet-box .meaning { font-size: 0.82rem; }
+
+    /* Hero adjustments */
+    .hero { padding: 1.5rem; min-height: 90vh; }
+    .hero-chinese { letter-spacing: 0.15em; }
+
+    /* Section padding */
+    section { padding: 3rem 1rem; }
+    .diaspora-section { padding: 3rem 1rem; }
+
+    /* Timeline full width */
+    .timeline-content { width: 100% !important; }
+
+    /* Ancestor cards full width */
+    .ancestor-grid { grid-template-columns: 1fr; }
+
+    /* Comment form */
+    .comment-modal { padding: 1.5rem; border-radius: 12px; }
+
+    /* Pronunciation grid */
+    .pronunciation-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .pronunciation-card .sound { font-size: 1.4rem; }
+    .pronunciation-box .big-char { font-size: 3.5rem; }
+
+    /* Location grid */
+    .location-grid { grid-template-columns: 1fr; }
+
+    /* Map height */
+    .map-container, .map-container #map { height: 300px !important; }
+
+    /* Intro boxes */
+    .intro-box { padding: 1.5rem; }
+
+    /* Translations grid single column */
+    .translations-grid { grid-template-columns: 1fr; }
+
+    /* Nav links smaller */
+    nav a { padding: 0.7rem 1rem; font-size: 0.8rem; }
+
+    /* Family photo feature */
+    .family-photo-feature { border-width: 2px; }
+
+    /* Section headers */
+    .section-header { margin-bottom: 2rem; }
+
+    /* Back to top smaller */
+    .back-to-top { width: 42px; height: 42px; bottom: 1rem; right: 1rem; }
+
+    /* Diaspora cards */
+    .diaspora-grid { grid-template-columns: 1fr; }
+    .diaspora-card .emoji { font-size: 2rem; }
+
+    /* Photo galleries single column on small phones */
+    .photo-gallery { grid-template-columns: 1fr !important; }
+    .photo-gallery.gallery-3 { grid-template-columns: 1fr !important; }
+
+    /* Font size adjustments for small phones */
+    h2 { font-size: 1.5rem !important; }
+    .section-header .chinese { font-size: 1.1rem; }
+    .hero-crest { font-size: 1.8rem; }
+
+    /* Glossary tooltip width */
+    .glossary-tooltip { max-width: 250px; font-size: 0.8rem; }
+
+    /* Comment buttons */
+    .add-comment-btn { font-size: 0.8rem; padding: 0.4rem 0.8rem; }
+
+    /* Fixed-width containers → fluid */
+    section { max-width: 100% !important; padding-left: 1rem !important; padding-right: 1rem !important; }
+    .hero-tagline { max-width: 100% !important; }
+    .diaspora-inner { max-width: 100% !important; }
+    .family-photo-feature { max-width: 100% !important; }
+    .section-header p { max-width: 100% !important; }
+    .comment-modal { max-width: calc(100vw - 2rem) !important; width: auto !important; }
+  }
+
+  /* Tablet fixes (iPad, etc) */
+  @media (min-width: 481px) and (max-width: 768px) {
+    .photo-item.portrait img { height: 350px; }
+    .ancestor-grid { grid-template-columns: 1fr 1fr; }
+    .pronunciation-grid { grid-template-columns: repeat(4, 1fr); }
+    section { padding: 3.5rem 1.5rem; }
+    .diaspora-section { padding: 3.5rem 1.5rem; }
+  }
+
+  /* Fix map container responsive for all sizes */
+  .map-container { width: 100%; }
+  .map-container #map { width: 100% !important; }
+
+  /* Ensure all images are responsive */
+  img { max-width: 100%; }
+
+  /* Safe area for notched phones (iPhone X+) */
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .back-to-top { bottom: calc(1rem + env(safe-area-inset-bottom)); }
+    nav { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+    .comment-modal { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
+  }
+
   /* ─── PRINT STYLES ─── */
   @media print {
-    nav, .scroll-hint, .back-to-top, .hamburger { display: none; }
+    nav, .scroll-hint, .back-to-top, .hamburger, .comment-trigger, .comment-modal-overlay { display: none; }
     .hero { min-height: auto; padding: 3rem 2rem; }
     section { padding: 2rem 1rem; }
     .timeline::before { display: none; }
     .timeline-content { width: 100%; }
   }
 </style>
-</head>
 </head>
 <body>
 
@@ -1097,7 +1506,7 @@
 
 <!-- ═══════════════════════ NAV ═══════════════════════ -->
 <nav>
-  <button class="hamburger" onclick="document.querySelector('nav ul').classList.toggle('open')" aria-label="Menú">&#9776;</button>
+  <button class="hamburger" onclick="this.parentElement.querySelector('ul').classList.toggle('open'); this.innerHTML = this.innerHTML === '☰' ? '✕' : '☰';" aria-label="Menú">☰</button>
   <ul>
     <li><a href="#origenes">Orígenes</a></li>
     <li><a href="#apellido">Cén → Shum</a></li>
@@ -1160,6 +1569,14 @@
       <p>El pueblo de Jiangzhou, en la ciudad de Enping, provincia de Guangdong, es el hogar ancestral de la rama sur del clan Cén. Enping es conocida como «侨乡» (tierra natal de los emigrantes chinos), con más de 400,000 descendientes viviendo en el extranjero.</p>
     </div>
   </div>
+
+  <!-- COMENTARIOS: Orígenes del Clan Cén -->
+  <div class="comments-area" id="comments-origenes">
+    <div class="comments-list" id="comments-list-origenes"></div>
+    <button class="comment-trigger" onclick="openCommentModal('origenes', 'Orígenes del Clan Cén')">
+      <span class="plus">+</span> Agregar comentario en esta sección
+    </button>
+  </div>
 </section>
 
 <!-- ═══════════════════════ CÉN → SHUM ═══════════════════════ -->
@@ -1206,6 +1623,14 @@
 
   <div class="quote-block">
     <p>«Cuando nuestros ancestros emigraron de Guangdong, llevaron consigo su dialecto cantonés. El apellido Shum que usamos hoy es la misma palabra que los emperadores de China conocían como Cén hace dos mil años — solo la pronunciación cambió con los dialectos y las distancias.»</p>
+  </div>
+
+  <!-- COMENTARIOS: Cén → Shum -->
+  <div class="comments-area" id="comments-apellido">
+    <div class="comments-list" id="comments-list-apellido"></div>
+    <button class="comment-trigger" onclick="openCommentModal('apellido', 'Cén → Shum')">
+      <span class="plus">+</span> Agregar comentario en esta sección
+    </button>
   </div>
 </section>
 
@@ -1374,6 +1799,14 @@
     </div>
 
   </div>
+
+  <!-- COMENTARIOS: Ancestros Ilustres -->
+  <div class="comments-area" id="comments-ancestros">
+    <div class="comments-list" id="comments-list-ancestros"></div>
+    <button class="comment-trigger" onclick="openCommentModal('ancestros', 'Ancestros Ilustres')">
+      <span class="plus">+</span> Agregar comentario en esta sección
+    </button>
+  </div>
 </section>
 
 <!-- ═══════════════════════ LÍNEA DEL TIEMPO ═══════════════════════ -->
@@ -1475,6 +1908,14 @@
       </div>
     </div>
   </div>
+
+  <!-- COMENTARIOS: Línea del Tiempo -->
+  <div class="comments-area" id="comments-linaje">
+    <div class="comments-list" id="comments-list-linaje"></div>
+    <button class="comment-trigger" onclick="openCommentModal('linaje', 'Línea del Tiempo')">
+      <span class="plus">+</span> Agregar comentario en esta sección
+    </button>
+  </div>
 </section>
 
 <!-- ═══════════════════════ EL PUEBLO ═══════════════════════ -->
@@ -1573,6 +2014,14 @@
     <div class="line">勋名伏义隆</div>
     <div class="meaning">«La gracia del mundo hereda benevolencia y generosidad»<br>«Los nombres meritorios surgen de la justicia y la grandeza»<br><br><em>— Estandarte de la Asociación del Clan Cén de la Llanura Central (中原岑氏宗亲会), 2016</em></div>
   </div>
+
+  <!-- COMENTARIOS: El Pueblo Ancestral -->
+  <div class="comments-area" id="comments-pueblo">
+    <div class="comments-list" id="comments-list-pueblo"></div>
+    <button class="comment-trigger" onclick="openCommentModal('pueblo', 'El Pueblo Ancestral')">
+      <span class="plus">+</span> Agregar comentario en esta sección
+    </button>
+  </div>
 </section>
 
 <!-- ═══════════════════════ MAPA ═══════════════════════ -->
@@ -1641,6 +2090,14 @@
       <img src="fotos/IMG_20251105_203028.jpg" alt="Ancestro de Guangdong" onclick="openLightbox(this.src)">
       <div class="photo-caption"><strong>Paneles: Enping y Ancestro de Guangdong</strong><br><span class="zh-cap">恩平开枝 · 广东始祖</span><br>Retrato de Cén Yáojùn y la expansión del clan</div>
     </div>
+  </div>
+
+  <!-- COMENTARIOS: Mapa y Ubicación -->
+  <div class="comments-area" id="comments-mapa">
+    <div class="comments-list" id="comments-list-mapa"></div>
+    <button class="comment-trigger" onclick="openCommentModal('mapa', 'Mapa y Ubicación')">
+      <span class="plus">+</span> Agregar comentario en esta sección
+    </button>
   </div>
 </section>
 
@@ -1711,6 +2168,14 @@
     <div class="quote-block" style="margin-top: 2rem; border-left-color: var(--gold); background: rgba(255,255,255,0.05);">
       <p style="color: rgba(255,255,255,0.85);">En el siglo XIX, las dificultades económicas, los desastres naturales y la inestabilidad política motivaron a muchas familias Cén de Enping a emigrar. Partieron hacia las Américas y el Sudeste Asiático, donde trabajaron en la construcción de ferrocarriles, la minería, el comercio y la agricultura. A pesar de las dificultades, preservaron sus tradiciones, fundaron asociaciones claniles y mantuvieron la conexión con Jiangzhou.</p>
     </div>
+  
+  <!-- COMENTARIOS: La Diáspora -->
+  <div class="comments-area" id="comments-diaspora">
+    <div class="comments-list" id="comments-list-diaspora"></div>
+    <button class="comment-trigger" onclick="openCommentModal('diaspora', 'La Diáspora')">
+      <span class="plus">+</span> Agregar comentario en esta sección
+    </button>
+  </div>
   </div>
 </div>
 
@@ -1797,6 +2262,14 @@
       <div class="context">Epílogo del museo</div>
     </div>
   </div>
+
+  <!-- COMENTARIOS: Inscripciones -->
+  <div class="comments-area" id="comments-inscripciones">
+    <div class="comments-list" id="comments-list-inscripciones"></div>
+    <button class="comment-trigger" onclick="openCommentModal('inscripciones', 'Inscripciones')">
+      <span class="plus">+</span> Agregar comentario en esta sección
+    </button>
+  </div>
 </section>
 
 <!-- ═══════════════════════ LA VISITA ═══════════════════════ -->
@@ -1851,6 +2324,14 @@
     <div class="line" style="font-size: 1.4rem;">家风永续，昌盛绵长</div>
     <div class="meaning">«El clan Cén de Enping, con orígenes que fluyen desde lejos»<br>«Las tradiciones familiares perduran por siempre, la prosperidad es eterna»</div>
   </div>
+
+  <!-- COMENTARIOS: La Visita 2025 -->
+  <div class="comments-area" id="comments-visita">
+    <div class="comments-list" id="comments-list-visita"></div>
+    <button class="comment-trigger" onclick="openCommentModal('visita', 'La Visita 2025')">
+      <span class="plus">+</span> Agregar comentario en esta sección
+    </button>
+  </div>
 </section>
 
 <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
@@ -1873,6 +2354,39 @@
   <img id="lightbox-img" src="" alt="Foto ampliada" onclick="event.stopPropagation()">
   <button class="lightbox-nav lightbox-next" onclick="event.stopPropagation();navigateLightbox(1)">&#8250;</button>
   <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
+<!-- Comment Modal -->
+<div class="comment-modal-overlay" id="commentModal">
+  <div class="comment-modal">
+    <button class="close-modal" onclick="closeCommentModal()">&times;</button>
+    <h3>Dejar un Comentario</h3>
+    <div class="modal-section-name" id="modalSectionName"></div>
+    <form class="comment-form" id="commentForm" onsubmit="submitComment(event)">
+      <input type="hidden" id="commentSection" value="">
+      <label for="commentName">Tu Nombre *</label>
+      <input type="text" id="commentName" placeholder="Ej: María Cén" required>
+      <label for="commentRelation">Relación con la Familia</label>
+      <select id="commentRelation">
+        <option value="Familiar directo">Familiar directo</option>
+        <option value="Primo/Prima">Primo / Prima</option>
+        <option value="Tío/Tía">Tío / Tía</option>
+        <option value="Sobrino/Sobrina">Sobrino / Sobrina</option>
+        <option value="Abuelo/Abuela">Abuelo / Abuela</option>
+        <option value="Esposo/Esposa">Esposo / Esposa</option>
+        <option value="Descendiente Cén">Descendiente Cén (Shum)</option>
+        <option value="Amigo de la familia">Amigo de la familia</option>
+        <option value="Investigador">Investigador / Historiador</option>
+        <option value="Visitante">Visitante</option>
+      </select>
+      <label for="commentCountry">País</label>
+      <input type="text" id="commentCountry" placeholder="Ej: Venezuela, China, USA...">
+      <label for="commentText">Tu Comentario *</label>
+      <textarea id="commentText" placeholder="Comparte una historia, recuerdo, o dato sobre la familia..." required></textarea>
+      <button type="submit" class="submit-btn" id="submitBtn">Enviar Comentario</button>
+      <div class="submit-status" id="submitStatus"></div>
+    </form>
+  </div>
 </div>
 
 <script>
@@ -1938,10 +2452,12 @@
     else backBtn.classList.remove('visible');
   }, {passive: true});
 
-  // Mobile menu - close on link click
+  // Mobile menu - close on link click and reset hamburger icon
   document.querySelectorAll('nav a').forEach(link => {
     link.addEventListener('click', () => {
       document.querySelector('nav ul').classList.remove('open');
+      const hamburger = document.querySelector('.hamburger');
+      if (hamburger) hamburger.innerHTML = '☰';
     });
   });
 
@@ -2008,6 +2524,192 @@
     card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
     cardObserver.observe(card);
   });
+
+  // ═══════════════════════════════════════════
+  // COMMENT SYSTEM (Google Sheets backend)
+  // ═══════════════════════════════════════════
+
+  // *** CONFIGURA AQUÍ TU URL DE GOOGLE APPS SCRIPT ***
+  const SHEETS_API_URL = ''; // <-- Pega aquí tu URL del Web App
+
+  let currentCommentSection = '';
+
+  function openCommentModal(sectionId, sectionName) {
+    currentCommentSection = sectionId;
+    document.getElementById('commentSection').value = sectionId;
+    document.getElementById('modalSectionName').textContent = 'Sección: ' + sectionName;
+    document.getElementById('commentModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('submitStatus').textContent = '';
+    document.getElementById('submitBtn').disabled = false;
+  }
+
+  function closeCommentModal() {
+    document.getElementById('commentModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('commentModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCommentModal();
+  });
+
+  function submitComment(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('submitStatus');
+    const name = document.getElementById('commentName').value.trim();
+    const relation = document.getElementById('commentRelation').value;
+    const country = document.getElementById('commentCountry').value.trim();
+    const text = document.getElementById('commentText').value.trim();
+    const section = document.getElementById('commentSection').value;
+
+    if (!name || !text) {
+      status.textContent = 'Por favor completa nombre y comentario.';
+      status.className = 'submit-status error';
+      return;
+    }
+
+    // If no API URL configured, save locally
+    if (!SHEETS_API_URL) {
+      saveCommentLocally({ name, relation, country, text, section, date: new Date().toISOString() });
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    status.textContent = '';
+
+    fetch(SHEETS_API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name,
+        relation: relation,
+        country: country,
+        text: text,
+        section: section,
+        date: new Date().toLocaleString('es-ES')
+      })
+    })
+    .then(() => {
+      status.textContent = 'Comentario enviado. ¡Gracias!';
+      status.className = 'submit-status success';
+      btn.textContent = 'Enviar Comentario';
+      btn.disabled = false;
+      // Add comment to UI immediately
+      addCommentToUI(section, { name, relation, country, text, date: 'Ahora' });
+      document.getElementById('commentForm').reset();
+      setTimeout(closeCommentModal, 1500);
+    })
+    .catch(err => {
+      // With no-cors, we can't read response, but it usually works
+      status.textContent = 'Comentario enviado. ¡Gracias!';
+      status.className = 'submit-status success';
+      btn.textContent = 'Enviar Comentario';
+      btn.disabled = false;
+      addCommentToUI(section, { name, relation, country, text, date: 'Ahora' });
+      document.getElementById('commentForm').reset();
+      setTimeout(closeCommentModal, 1500);
+    });
+  }
+
+  function saveCommentLocally(data) {
+    // Fallback: save to localStorage when no API is configured
+    let comments = JSON.parse(localStorage.getItem('cen_comments') || '[]');
+    comments.push(data);
+    localStorage.setItem('cen_comments', JSON.stringify(comments));
+    addCommentToUI(data.section, {
+      name: data.name,
+      relation: data.relation,
+      country: data.country,
+      text: data.text,
+      date: new Date().toLocaleDateString('es-ES')
+    });
+    const status = document.getElementById('submitStatus');
+    status.textContent = 'Comentario guardado localmente. ¡Gracias!';
+    status.className = 'submit-status success';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('commentForm').reset();
+    setTimeout(closeCommentModal, 1500);
+  }
+
+  function addCommentToUI(sectionId, data) {
+    const list = document.getElementById('comments-list-' + sectionId);
+    if (!list) return;
+    const initials = data.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    const card = document.createElement('div');
+    card.className = 'comment-card';
+    card.innerHTML = '<div class="comment-header">' +
+      '<div class="comment-avatar">' + initials + '</div>' +
+      '<div class="comment-meta">' +
+        '<div class="name">' + escapeHTML(data.name) + (data.country ? ' · ' + escapeHTML(data.country) : '') + '</div>' +
+        '<div class="relation">' + escapeHTML(data.relation) + '</div>' +
+        '<div class="date">' + escapeHTML(data.date) + '</div>' +
+      '</div></div>' +
+      '<div class="comment-text">' + escapeHTML(data.text) + '</div>';
+    list.appendChild(card);
+    updateCommentCount(sectionId);
+  }
+
+  function updateCommentCount(sectionId) {
+    const list = document.getElementById('comments-list-' + sectionId);
+    if (!list) return;
+    const count = list.children.length;
+    let countEl = list.previousElementSibling;
+    if (!countEl || !countEl.classList.contains('comment-count')) {
+      countEl = document.createElement('div');
+      countEl.className = 'comment-count';
+      list.parentNode.insertBefore(countEl, list);
+    }
+    countEl.textContent = count + (count === 1 ? ' comentario' : ' comentarios');
+  }
+
+  function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Load comments from Google Sheets on page load
+  function loadComments() {
+    if (!SHEETS_API_URL) {
+      // Load from localStorage fallback
+      let comments = JSON.parse(localStorage.getItem('cen_comments') || '[]');
+      comments.forEach(c => {
+        addCommentToUI(c.section, {
+          name: c.name,
+          relation: c.relation,
+          country: c.country || '',
+          text: c.text,
+          date: new Date(c.date).toLocaleDateString('es-ES')
+        });
+      });
+      return;
+    }
+    fetch(SHEETS_API_URL + '?action=get')
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.comments) {
+          data.comments.forEach(c => addCommentToUI(c.section, c));
+        }
+      })
+      .catch(() => {
+        // Silent fail - comments just won't load from server
+        // Try localStorage fallback
+        let comments = JSON.parse(localStorage.getItem('cen_comments') || '[]');
+        comments.forEach(c => {
+          addCommentToUI(c.section, {
+            name: c.name, relation: c.relation,
+            country: c.country || '', text: c.text,
+            date: new Date(c.date).toLocaleDateString('es-ES')
+          });
+        });
+      });
+  }
+
+  // Initialize comments on load
+  loadComments();
 </script>
 
 </body>
